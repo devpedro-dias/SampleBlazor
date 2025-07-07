@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <Folder Include="Extensions\" />
-    <Folder Include="Repository\Interfaces\" />
     <Folder Include="wwwroot\lib\bootstrap\js\" />
   </ItemGroup>
 
