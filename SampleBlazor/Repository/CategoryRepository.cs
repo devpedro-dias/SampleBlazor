@@ -1,4 +1,5 @@
-﻿using SampleBlazor.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using SampleBlazor.Data;
 using SampleBlazor.Repository.Interfaces;
 
 namespace SampleBlazor.Repository
@@ -11,27 +12,27 @@ namespace SampleBlazor.Repository
         {
             _context = db;
         }
-        public Category Create(Category obj)
+        public async Task<Category> CreateAsync(Category obj)
         {
-            _context.Category.Add(obj);
-            _context.SaveChanges();
+            await _context.Category.AddAsync(obj);
+            await _context.SaveChangesAsync();
             return obj;
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            var obj = _context.Category.FirstOrDefault(u => u.Id == id);
+            var obj = await _context.Category.FirstOrDefaultAsync(u => u.Id == id);
             if (obj != null)
             {
                 _context.Category.Remove(obj);
-                return _context.SaveChanges() > 0;
+                return await _context.SaveChangesAsync() > 0;
             }
             return false;
         }
 
-        public Category Get(int id)
+        public async Task<Category> GetAsync(int id)
         {
-            var obj = _context.Category.FirstOrDefault(u => u.Id == id);
+            var obj = await _context.Category.FirstOrDefaultAsync(u => u.Id == id);
             if(obj == null)
             {
                 return new Category();
@@ -39,19 +40,19 @@ namespace SampleBlazor.Repository
             return obj;
         }
 
-        public IEnumerable<Category> GetAll()
+        public async Task<IEnumerable<Category>> GetAllAsync()
         {
-            return _context.Category.ToList();
+            return await _context.Category.ToListAsync();
         }
 
-        public Category Update(Category obj)
+        public async Task<Category> UpdateAsync(Category obj)
         {
-            var objFromDb = _context.Category.FirstOrDefault(u => u.Id == obj.Id);
+            var objFromDb = await _context.Category.FirstOrDefaultAsync(u => u.Id == obj.Id);
             if (objFromDb is not null)
             {
                 objFromDb.Name = obj.Name;
                 _context.Category.Update(objFromDb);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return objFromDb;
             }
             return obj;
