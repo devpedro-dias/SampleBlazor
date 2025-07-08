@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Data\Product.razor" />
     <Content Remove="wwwroot\lib\bootstrap\js\javascript.cs" />
   </ItemGroup>
 
