@@ -1,6 +1,10 @@
 ﻿@page "/"
 @inject IProductRepository _productRepository
 @inject ICategoryRepository _categoryRepository
+@inject IShoppingCartRepository _cartRepository
+@inject AuthenticationStateProvider _authenticationStateProvider
+@inject IJSRuntime _js
+@inject NavigationManager _navigationManager
 
 @if (isLoading)
 {
@@ -66,7 +70,9 @@ else
                                 </div>
                                 <p class="card-text mt-2">@((MarkupString)@prod.Description)</p>
                                 <h4 class="text-center">
-                                    <i class="bi bi-cart3 btn btn-success text-right  px-5" style="width: 100%"> Add to cart</i>
+                                    <div class="m-lg-auto p-2" @onclick="() => AddOrderItem(prod)">
+                                        <i class="bi bi-cart3 btn btn-success text-right  px-5" style="width: 100%"> Add to cart</i
+                                    </div>
                                 </h4>
 
                             </div>
@@ -135,5 +141,31 @@ else
     private string GetActiveTabClass(int categoryId)
     {
         return categoryId == _selectedCategoryId ? "active" : string.Empty;
+    }
+
+    private async Task AddOrderItem(Product product)
+    {
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var authenticated = user.Identity is not null && user.Identity.IsAuthenticated;
+
+        if (!authenticated)
+        {
+            // TODO: fix routing
+            _navigationManager.NavigateTo("account/login");
+        }
+        else
+        {
+            var result = await _cartRepository.UpdateCartAsync(user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value, product.Id, 1);
+
+            if (result)
+            {
+                _js?.ToastrSuccess("Product added to cart successfully");
+            }
+            else
+            {
+                _js?.ToastrError("Error encountered");
+            }
+        }
     }
 }
