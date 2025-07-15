@@ -1,9 +1,11 @@
 ﻿@page "/cart"
+@using SampleBlazor.Services
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject IJSRuntime _js
 @inject IShoppingCartRepository _cartRepository
 @inject IOrderRepository _orderRepository
 @inject NavigationManager _navigationManager
+@inject SharedStateService _sharedStateService
 @attribute [Authorize]
 
 @if (isLoading)
@@ -160,6 +162,7 @@ else
     private async Task UpdateCartItem(int productId, int updateBy)
     {
         var result = await _cartRepository.UpdateCartAsync(OrderHeader.UserId, productId, updateBy);
+        _sharedStateService.TotalCartCount = await _cartRepository.GetTotalCartCountAsync(OrderHeader.UserId);
         await LoadCart();
     }
 

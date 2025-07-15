@@ -7,6 +7,7 @@ using SampleBlazor.Components.Account;
 using SampleBlazor.Data;
 using SampleBlazor.Repository;
 using SampleBlazor.Repository.Interfaces;
+using SampleBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,7 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+builder.Services.AddSingleton<SharedStateService>();
 builder.Services.AddRadzenComponents();
 builder.Services.AddAuthentication(options =>
     {

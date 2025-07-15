@@ -1,10 +1,12 @@
 ﻿@page "/"
+@using SampleBlazor.Services
 @inject IProductRepository _productRepository
 @inject ICategoryRepository _categoryRepository
 @inject IShoppingCartRepository _cartRepository
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject IJSRuntime _js
 @inject NavigationManager _navigationManager
+@inject SharedStateService _sharedStateService
 
 @if (isLoading)
 {
@@ -156,7 +158,9 @@ else
         }
         else
         {
-            var result = await _cartRepository.UpdateCartAsync(user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value, product.Id, 1);
+            var userId = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+            var result = await _cartRepository.UpdateCartAsync(userId, product.Id, 1);
+            _sharedStateService.TotalCartCount = await _cartRepository.GetTotalCartCountAsync(userId);
 
             if (result)
             {
