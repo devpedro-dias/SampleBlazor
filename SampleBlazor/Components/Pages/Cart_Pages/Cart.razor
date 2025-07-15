@@ -2,6 +2,8 @@
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject IJSRuntime _js
 @inject IShoppingCartRepository _cartRepository
+@inject IOrderRepository _orderRepository
+@inject NavigationManager _navigationManager
 @attribute [Authorize]
 
 @if (isLoading)
@@ -67,6 +69,7 @@ else
                         Pickup Details
                     </div>
                     <EditForm Model="OrderHeader" FormName="CartForm" OnValidSubmit="ProcessOrderCreation">
+                        <DataAnnotationsValidator />
                         <div class="card-body">
                             <div class="form-group">
                                 <label>Name</label>
@@ -87,7 +90,7 @@ else
                             <div class="card mt-4 bg-light">
                                 <div class="card-body">
                                     <h4>
-                                        Grand Total: @OrderHeader.OrderTotal.ToString("C", CultureInfo.GetCultureInfo("en-us"));
+                                        Grand Total: @OrderHeader.OrderTotal.ToString("C", CultureInfo.GetCultureInfo("en-us"))
                                     </h4>
                                     <h4>
                                         No. of Items: @TotalItems
@@ -162,6 +165,10 @@ else
 
     private async Task ProcessOrderCreation()
     {
-
+        isLoading = true;
+        await Task.Yield();
+        OrderHeader.OrderDetails = SD.ConvertShoppingCartListToOrderDetail(ShoppingCarts.ToList());
+        await _orderRepository.CreateAsync(OrderHeader);
+        _navigationManager.NavigateTo($"/order/confirmation/{OrderHeader.Id}");
     }
 }
